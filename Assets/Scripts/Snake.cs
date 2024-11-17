@@ -28,7 +28,7 @@ public class Snake : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        // W S A D
+        // W S A D ²¾°Ê
         if(Input.GetKeyDown(KeyCode.W) && direction != Vector3.down)
         {
             //Debug.Log("W");
