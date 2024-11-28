@@ -1,4 +1,4 @@
-using System.Collections;
+ï»¿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -13,13 +13,14 @@ public class Snake : MonoBehaviour
     public Transform bodyPrefab;
 
     public List<Transform> bodies = new List<Transform>();
+    public Dictionary<KeyCode, Vector3> directionMap;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         //Debug.Log(transform.position);
 
-        // ¹CÀ¸°õ¦æ³t«×¹w³]1¡A0.1f ¬°©ñºC10­¿
+        // éŠæˆ²åŸ·è¡Œé€Ÿåº¦é è¨­1ï¼Œ0.1f ç‚ºæ”¾æ…¢10å€
         Time.timeScale = speed;
 
         RestStage();
@@ -28,37 +29,18 @@ public class Snake : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        // W S A D ²¾°Ê
-        if(Input.GetKeyDown(KeyCode.W) && direction != Vector3.down)
+        // W S A D ç§»å‹•
+        foreach (var entry in directionMap)
         {
-            //Debug.Log("W");
-            //transform.Translate(Vector3.up);
+            KeyCode key = entry.Key;
+            Vector3 dir = entry.Value;
 
-            direction = Vector3.up; //0,1,0
+            if (Input.GetKeyDown(key) && direction != -dir)
+            {
+                direction = dir;
+                
+            }
         }
-        if (Input.GetKeyDown(KeyCode.S) && direction != Vector3.up)
-        {
-           // Debug.Log("S");
-            //transform.Translate(Vector3.down);
-
-            direction = Vector3.down;
-        }
-        if (Input.GetKeyDown(KeyCode.A) && direction != Vector3.right)
-        {
-            //Debug.Log("A");
-            //transform.Translate(Vector3.left);
-
-            direction = Vector3.left;
-        }
-        if (Input.GetKeyDown(KeyCode.D) && direction != Vector3.left)
-        {
-            //Debug.Log("D");
-            //transform.Translate(Vector3.right);
-
-            direction = Vector3.right;
-        }
-
-        //transform.Translate(direction);¶¶¶¶²¾°Ê
     }
 
     private void FixedUpdate()
@@ -73,22 +55,22 @@ public class Snake : MonoBehaviour
     }
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        // ³z¹L Tag §ä¨ì Unity ¤¤¹ïÀ³ªº¹CÀ¸ª«¥ó¡A¦³¸I¨ì«hªø¨­Åé
+        // é€é Tag æ‰¾åˆ° Unity ä¸­å°æ‡‰çš„éŠæˆ²ç‰©ä»¶ï¼Œæœ‰ç¢°åˆ°å‰‡é•·èº«é«”
         if (collision.CompareTag("food"))
         {
             //Instantiate(bodyPrefab);
 
-            // ¥[¸ü¹CÀ¸ª«¥óªº¦P®É¡A¶¶«K³]©w¨ä¤@¶}©lªº¦ì¸m¦b¨¤¦â¨­¤W©M±ÛÂà¨¤«×¡A¸Ñ¨M¤@¶}©l¦b¹CÀ¸¥@¬É¥¿¤¤¥¡ªºbug
+            // åŠ è¼‰éŠæˆ²ç‰©ä»¶çš„åŒæ™‚ï¼Œé †ä¾¿è¨­å®šå…¶ä¸€é–‹å§‹çš„ä½ç½®åœ¨è§’è‰²èº«ä¸Šå’Œæ—‹è½‰è§’åº¦ï¼Œè§£æ±ºä¸€é–‹å§‹åœ¨éŠæˆ²ä¸–ç•Œæ­£ä¸­å¤®çš„bug
             bodies.Add(Instantiate(bodyPrefab
-                , transform.position //¨¤¦â·í«e¦ì¸m
-                , Quaternion.identity)); //µL±ÛÂà¨¤«×(t,Q¥²¶·¦P®É¨Ï¥Î)
+                , transform.position //è§’è‰²ç•¶å‰ä½ç½®
+                , Quaternion.identity)); //ç„¡æ—‹è½‰è§’åº¦(t,Qå¿…é ˆåŒæ™‚ä½¿ç”¨)
 
             gameUI.AddScore();
 
             gameAudio.PlayEatSound();
         }
 
-        //­Y¼²Àğ«h¹CÀ¸µ²§ô¡A³D¦^¤¤¤ßÂI
+        //è‹¥æ’ç‰†å‰‡éŠæˆ²çµæŸï¼Œè›‡å›ä¸­å¿ƒé»
         if (collision.CompareTag("Obstacle"))
         {
             Debug.Log("game over");
@@ -103,6 +85,15 @@ public class Snake : MonoBehaviour
     {
         transform.position = Vector3.zero;
         direction = Vector3.zero;
+
+
+        directionMap = new Dictionary<KeyCode, Vector3>
+        {
+            { KeyCode.W, Vector3.up },
+            { KeyCode.S, Vector3.down},
+            { KeyCode.A, Vector3.left},
+            { KeyCode.D, Vector3.right}
+        };
 
         for (int i = 1; i < bodies.Count; i++)
         {
