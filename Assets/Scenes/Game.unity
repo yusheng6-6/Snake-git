@@ -269,7 +269,7 @@ GameObject:
   - component: {fileID: 236980608}
   m_Layer: 0
   m_Name: food area
-  m_TagString: Untagged
+  m_TagString: Obstacle
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -502,7 +502,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   gameUI: {fileID: 739495633}
   gameAudio: {fileID: 1445805912}
-  speed: 0.2
+  speed: 2
+  acceleration: 0.05
   bodyPrefab: {fileID: 2959554510686704372, guid: b63f2afa60e309b4b9035c33f54dd328, type: 3}
   bodies: []
 --- !u!1 &409489262

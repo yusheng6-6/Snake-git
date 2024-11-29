@@ -8,11 +8,13 @@ public class Snake : MonoBehaviour
     public GameAudio gameAudio;
 
     Vector3 direction;
-    public float speed;
+    public float speed; //基本速度
+    private float currentSpeed; //當前速度
+    public float acceleration;  //加速度
 
     public Transform bodyPrefab;
-
     public List<Transform> bodies = new List<Transform>();
+
     public Dictionary<KeyCode, Vector3> directionMap;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -21,13 +23,28 @@ public class Snake : MonoBehaviour
         //Debug.Log(transform.position);
 
         // 遊戲執行速度預設1，0.1f 為放慢10倍
-        Time.timeScale = speed;
+        //Time.timeScale = speed;
 
         RestStage();
     }
 
     // Update is called once per frame
     void Update()
+    {
+        Movement();
+        
+    }
+
+    private void FixedUpdate()
+    {
+        for (int i = bodies.Count - 1; i > 0; i--)
+        {
+            bodies[i].position = bodies[i - 1].position;
+        }
+    }
+
+    // 蛇前進
+    void Movement()
     {
         // W S A D 移動
         foreach (var entry in directionMap)
@@ -41,18 +58,27 @@ public class Snake : MonoBehaviour
                 
             }
         }
+        transform.Translate(direction * currentSpeed * Time.fixedDeltaTime);
+
+        MovementSpeedUp();
     }
 
-    private void FixedUpdate()
+    // 蛇加速
+    void MovementSpeedUp()
     {
-        for (int i = bodies.Count - 1; i > 0; i--)
+        if (Input.GetKey(KeyCode.Space))  //按下Space加速
         {
-            bodies[i].position = bodies[i - 1].position;
+            currentSpeed += acceleration;
+            transform.Translate(direction * currentSpeed * Time.fixedDeltaTime);
+            //Debug.Log("按下Space: " + currentSpeed);
         }
-
-        transform.Translate(direction);
-
+        else if (Input.GetKeyUp(KeyCode.Space)) //放開Space減速
+        {
+            currentSpeed = speed;
+            //Debug.Log("放開Space: "+currentSpeed);
+        }
     }
+
     private void OnTriggerEnter2D(Collider2D collision)
     {
         // 透過 Tag 找到 Unity 中對應的遊戲物件，有碰到則長身體
@@ -86,7 +112,9 @@ public class Snake : MonoBehaviour
         transform.position = Vector3.zero;
         direction = Vector3.zero;
 
+        currentSpeed = speed; //設置初始速度
 
+        //WSAD控制方向
         directionMap = new Dictionary<KeyCode, Vector3>
         {
             { KeyCode.W, Vector3.up },
@@ -104,4 +132,6 @@ public class Snake : MonoBehaviour
 
         gameUI.ResetScore();
     }
+
+
 }
